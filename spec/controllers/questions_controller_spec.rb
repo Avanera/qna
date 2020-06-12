@@ -12,8 +12,8 @@ RSpec.describe QuestionsController, type: :controller do
 
       it 'redirects to show view' do
         post :create, params: { id: question }
-        expect(response).to redirect_to question
 
+        expect(response).to redirect_to question
       end
     end
 
@@ -26,6 +26,7 @@ RSpec.describe QuestionsController, type: :controller do
 
       it 're-renders new view' do
         post :create, params: { question: attributes_for(:question, :invalid) }
+
         expect(response).to render_template :new
       end
     end
@@ -47,6 +48,7 @@ RSpec.describe QuestionsController, type: :controller do
         patch :update, params: {
           id: question, question: attributes_for(:question)
         }
+
         expect(response).to redirect_to question
       end
     end
@@ -79,6 +81,7 @@ RSpec.describe QuestionsController, type: :controller do
 
     it 'redirects to index' do
       delete :destroy, params: { id: question }
+
       expect(response).to redirect_to questions_path
     end
   end
