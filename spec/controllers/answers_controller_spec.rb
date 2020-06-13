@@ -9,7 +9,7 @@ RSpec.describe AnswersController, type: :controller do
       it 'saves a new answer for the given question in the database' do
         expect { post :create, params: {
           answer: attributes_for(:answer), question_id: question
-        }}.to change(question.answer, :count).by(1)
+        }}.to change(question.answers, :count).by(1)
       end
 
       it 'redirects to question show view' do
@@ -25,7 +25,7 @@ RSpec.describe AnswersController, type: :controller do
       it 'does not save the answer' do
         expect { post :create, params: {
           answer: attributes_for(:answer, :invalid), question_id: question
-        }}.to_not change(question.answer, :count)
+        }}.to_not change(question.answers, :count)
       end
 
       it 're-renders answer new view' do
