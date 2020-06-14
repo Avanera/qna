@@ -1,13 +1,14 @@
 class AnswersController < ApplicationController
+  before_action :authenticate_user!, except: %i[index show]
   before_action :question, only: %i[new create]
   expose :answers, -> { question.answers }
-  expose :answer, -> { answers.new(answer_params) }
 
   def create
+    answer = question.answers.new(answer_params)
     if answer.save
-      redirect_to answer.question
+      redirect_to question_path(question), notice: 'Your answer successfully created'
     else
-      render :new
+      redirect_to question_path(question), alert: "Your answer can't be blank"
     end
   end
 

@@ -1,8 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe AnswersController, type: :controller do
+  let(:user) { create(:user) }
 
   describe 'POST #create' do
+    before { login(user) }
+
     let(:question) { create(:question) }
 
     context 'with valid attributes' do
@@ -28,12 +31,12 @@ RSpec.describe AnswersController, type: :controller do
         }}.to_not change(question.answers, :count)
       end
 
-      it 're-renders answer new view' do
+      it 're-renders question' do
         post :create, params: {
           answer: attributes_for(:answer, :invalid), question_id: question
         }
 
-        expect(response).to render_template :new
+        expect(response).to redirect_to question
       end
     end
   end
