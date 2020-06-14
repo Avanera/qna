@@ -5,8 +5,8 @@ FactoryBot.define do
       answers_count { 5 }
     end
 
-    title { "MyString" }
-    body { "MyText" }
+    title { "MyQuestionTitle" }
+    body { "MyQuestionBody" }
 
     trait :invalid do
       title { nil }
