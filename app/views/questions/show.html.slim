@@ -4,3 +4,6 @@ h4= question.body
 = render partial: 'answers/form', locals: { question: question, answer: @answer }
 
 = render question.answers
+
+- if question.user == current_user
+  = link_to 'Delete', question_path(question), method: :delete, data: { confirm: 'Are you sure?' }

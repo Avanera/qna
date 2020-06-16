@@ -8,6 +8,7 @@ class QuestionsController < ApplicationController
   end
 
   def create
+    @exposed_question = current_user.questions.new(question_params)
     if question.save
       redirect_to question, notice: 'Your question successfully created.'
     else
@@ -19,13 +20,18 @@ class QuestionsController < ApplicationController
     if question.update(question_params)
       redirect_to question
     else
+      # flash.now[:notice] = ''
       render :edit
     end
   end
 
   def destroy
-    question.destroy
-    redirect_to questions_path
+    if question.user_id == current_user.id
+      question.destroy
+      redirect_to questions_path, alert: 'Your question successfully deleted'
+    else
+      redirect_to question, alert: "You can't delete the question created by another person"
+    end
   end
 
   private
