@@ -1,9 +1,6 @@
 FactoryBot.define do
   factory :question do
-    # generating has_many answers
-    transient do
-      answers_count { 5 }
-    end
+    user
 
     title { "MyQuestionTitle" }
     body { "MyQuestionBody" }
@@ -11,6 +8,5 @@ FactoryBot.define do
     trait :invalid do
       title { nil }
     end
-    user
   end
 end

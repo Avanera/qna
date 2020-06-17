@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 feature 'User can create an answer', %q{
-  In order to get answer the question
+  In order to answer the question
   As an authenticated user
   I'd like to be able to answer the question
 } do
@@ -13,7 +13,6 @@ feature 'User can create an answer', %q{
 
     background do
       sign_in(user)
-
       visit question_path(question)
     end
 

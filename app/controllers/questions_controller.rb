@@ -4,7 +4,7 @@ class QuestionsController < ApplicationController
   expose :question
 
   def show
-    @answer = question.answers.new
+    @answer = Answer.new
   end
 
   def create
@@ -26,7 +26,7 @@ class QuestionsController < ApplicationController
   end
 
   def destroy
-    if question.user_id == current_user.id
+    if current_user.author_of?(question)
       question.destroy
       redirect_to questions_path, alert: 'Your question successfully deleted'
     else
