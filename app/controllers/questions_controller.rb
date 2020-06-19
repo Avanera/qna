@@ -4,7 +4,7 @@ class QuestionsController < ApplicationController
   expose :question
 
   def show
-    @answer = Answer.new
+    @exposed_answer = Answer.new
   end
 
   def create
