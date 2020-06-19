@@ -13,7 +13,13 @@ RSpec.describe AnswersController, type: :controller do
         expect { post :create, params: {
           answer: attributes_for(:answer), question_id: question
         }}.to change(question.answers, :count).by(1)
-        expect(answer.user_id).to eq(user.id)
+      end
+
+      it 'belongs to the user' do
+        post :create, params: {
+          answer: attributes_for(:answer), question_id: question }
+
+        expect(assigns(:exposed_answer).user_id).to eq(user.id)
       end
 
       it 'redirects to question show view' do
@@ -37,7 +43,7 @@ RSpec.describe AnswersController, type: :controller do
           answer: attributes_for(:answer, :invalid), question_id: question
         }
 
-        expect(response).to redirect_to question
+        expect(response).to render_template 'questions/show'
       end
     end
   end
@@ -51,7 +57,7 @@ RSpec.describe AnswersController, type: :controller do
     context 'author' do
       it 'deletes the answer' do
         expect { delete :destroy, params: { question_id: question, id: answer } }
-        .to change(author.answers, :count).by(-1)
+        .to change(Answer, :count).by(-1)
       end
 
       it 'redirects to index' do
@@ -68,7 +74,12 @@ RSpec.describe AnswersController, type: :controller do
       it 'does not delete the question' do
         expect { delete :destroy, params: { question_id: question, id: answer } }
           .to_not change(Answer, :count)
-        expect(response).to redirect_to question
+        end
+
+        it 'redirects to question show' do
+          delete :destroy, params: { question_id: question, id: answer }
+
+          expect(response).to redirect_to question
       end
     end
   end

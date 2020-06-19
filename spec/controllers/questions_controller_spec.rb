@@ -59,6 +59,8 @@ RSpec.describe QuestionsController, type: :controller do
     end
 
     context 'with invalid attributes' do
+      let(:old_question) { question }
+
       before { patch :update, params: {
         id: question, question: attributes_for(:question, :invalid)
         }}
@@ -66,8 +68,8 @@ RSpec.describe QuestionsController, type: :controller do
         it 'does not change question' do
           question.reload
 
-          expect(question.title).to eq 'MyQuestionTitle'
-          expect(question.body).to eq 'MyQuestionBody'
+          expect(question.title).to eq old_question.title
+          expect(question.body).to eq old_question.body
         end
 
         it 're-renders edit view' do
@@ -84,7 +86,7 @@ RSpec.describe QuestionsController, type: :controller do
     context 'author' do
       it 'deletes the question' do
         expect { delete :destroy, params: { id: question } }
-        .to change(author.questions, :count).by(-1)
+        .to change(Question, :count).by(-1)
       end
 
       it 'redirects to index' do
@@ -101,6 +103,11 @@ RSpec.describe QuestionsController, type: :controller do
       it 'does not delete the question' do
         expect { delete :destroy, params: { id: question } }
           .to_not change(Question, :count)
+      end
+
+      it 'redirects to question show' do
+        delete :destroy, params: { id: question }
+
         expect(response).to redirect_to question
       end
     end

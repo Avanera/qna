@@ -1,3 +1,10 @@
-p= answer.body
-- if current_user&.author_of?(answer)
-  = link_to 'Delete the answer', question_answer_path(question_id: question, id: answer), method: :delete, data: { confirm: 'Are you sure?' }
+/ need if persisted? not to show invalid answers
+/ because if the new answer was invalid it will still be
+/ in the collection of questions - but without id, because it was not saved,
+/ so the link 'delete' will not be created by rails -> leads to exception.
+
+- if answer.persisted?
+  p= answer.body
+
+  - if current_user&.author_of?(answer)
+    = link_to 'Delete the answer', question_answer_path(question, answer), method: :delete, data: { confirm: 'Are you sure?' }

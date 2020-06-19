@@ -3,14 +3,19 @@ class AnswersController < ApplicationController
   before_action :question, only: %i[new create]
   expose :answer
   expose :answers, -> { question.answers }
+  expose :question
 
   def create
     @exposed_answer = question.answers.new(answer_params)
-    answer.user_id = current_user.id
+    answer.user = current_user
     if answer.save
       redirect_to question_path(question), notice: 'Your answer successfully created'
     else
-      redirect_to question_path(question), alert: "Your answer can't be blank"
+      # flash.now[:alert] = "Your question was not saved"
+      render 'questions/show'
+      # render template: 'questions/show', locals: { @exposed_question => question }
+      # redirect_to question_path(question), alert: "Your answer can't be blank"
+      # render 'questions/show', locals: { @exposed_question => question, answer: Answer.new }
     end
   end
 
@@ -25,9 +30,9 @@ class AnswersController < ApplicationController
 
   private
 
-  def question
-    @question = Question.find(params[:question_id])
-  end
+  # def question
+  #   @question = Question.find(params[:question_id])
+  # end
 
   def answer_params
     params.require(:answer).permit(:body)
