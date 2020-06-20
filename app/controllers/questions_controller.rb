@@ -20,7 +20,7 @@ class QuestionsController < ApplicationController
     if question.update(question_params)
       redirect_to question
     else
-      # flash.now[:notice] = ''
+      flash.now[:notice] = 'Your question was not saved'
       render :edit
     end
   end

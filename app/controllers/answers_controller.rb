@@ -11,11 +11,8 @@ class AnswersController < ApplicationController
     if answer.save
       redirect_to question_path(question), notice: 'Your answer successfully created'
     else
-      # flash.now[:alert] = "Your question was not saved"
+      flash.now[:alert] = "Your question was not saved"
       render 'questions/show'
-      # render template: 'questions/show', locals: { @exposed_question => question }
-      # redirect_to question_path(question), alert: "Your answer can't be blank"
-      # render 'questions/show', locals: { @exposed_question => question, answer: Answer.new }
     end
   end
 
@@ -29,10 +26,6 @@ class AnswersController < ApplicationController
   end
 
   private
-
-  # def question
-  #   @question = Question.find(params[:question_id])
-  # end
 
   def answer_params
     params.require(:answer).permit(:body)
