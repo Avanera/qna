@@ -1,12 +1,15 @@
 FactoryBot.define do
-  factory :question do
-    # generating has_many answers
-    transient do
-      answers_count { 5 }
-    end
+  sequence :body do |n|
+    "MyQuestionBody#{n}"
+  end
+  sequence :title do |n|
+    "MyQuestionTitle#{n}"
+  end
 
-    title { "MyString" }
-    body { "MyText" }
+  factory :question do
+    user
+    title
+    body
 
     trait :invalid do
       title { nil }
