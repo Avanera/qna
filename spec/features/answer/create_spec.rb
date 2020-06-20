@@ -20,8 +20,10 @@ feature 'User can create an answer', %q{
       fill_in 'Your answer', with: 'answer answer answer'
       click_on 'Answer the question'
 
-      expect(page).to have_content 'Your answer successfully created'
-      expect(page).to have_content 'answer answer answer'
+      expect(current_path).to eq question_path(question)
+      within '.answers' do # to make sure that the answer is in the list, not in the form
+        expect(page).to have_content 'answer answer answer'
+      end
     end
 
     scenario 'answers the question with errors' do

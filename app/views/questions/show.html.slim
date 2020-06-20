@@ -3,7 +3,9 @@ h4= question.body
 
 = render 'answers/form', locals: { answer: @exposed_answer }
 
-= render question.answers
+// <div> с классом answers
+.answers
+  = render question.answers
 
 // current_user&.id means:
 // if current user is nil -> return nil (not exception)

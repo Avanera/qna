@@ -112,4 +112,12 @@ RSpec.describe QuestionsController, type: :controller do
       end
     end
   end
+
+  describe 'GET #show' do
+    before { get :show, params: { id: question } }
+
+    it 'assigns new answer for the question' do
+      expect(assigns(:exposed_answer)).to be_a_new(Answer)
+    end
+  end
 end

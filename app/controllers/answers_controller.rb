@@ -9,7 +9,7 @@ class AnswersController < ApplicationController
     @exposed_answer = question.answers.new(answer_params)
     answer.user = current_user
     if answer.save
-      redirect_to question_path(question), notice: 'Your answer successfully created'
+      redirect_to question, notice: 'Your answer successfully created'
     else
       flash.now[:alert] = "Your question was not saved"
       render 'questions/show'
