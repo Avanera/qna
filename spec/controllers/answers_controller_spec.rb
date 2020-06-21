@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe AnswersController, type: :controller do
   let(:user) { create(:user) }
   let(:question) { create(:question, user: user) }
-  let(:answer) { create(:answer, question: question, user: user) }
+  let!(:answer) { create(:answer, question: question, user: user) }
 
   describe 'POST #create' do
     before { login(user) }
@@ -22,7 +22,7 @@ RSpec.describe AnswersController, type: :controller do
         expect(assigns(:exposed_answer).user_id).to eq(user.id)
       end
 
-      it 'redirects to question show view' do
+      it 'renders create template' do
         post :create, params: {
           answer: attributes_for(:answer), question_id: question
         }, format: :js
@@ -38,12 +38,42 @@ RSpec.describe AnswersController, type: :controller do
         }, format: :js }.to_not change(question.answers, :count)
       end
 
-      it 're-renders question' do
+      it 'renders create template' do
         post :create, params: {
           answer: attributes_for(:answer, :invalid), question_id: question
         }, format: :js
 
         expect(response).to render_template :create
+      end
+    end
+  end
+
+  describe 'PATCH #update' do
+    before { login(user) }
+
+    context 'with valid attributes' do
+      it 'changes answer attributes' do
+        patch :update, params: { id: answer, answer: { body: 'new body' } }, format: :js
+        answer.reload
+        expect(answer.body).to eq 'new body'
+      end
+
+      it 'renders update view' do
+        patch :update, params: { id: answer, answer: { body: 'new body' } }, format: :js
+        expect(response).to render_template :update
+      end
+    end
+
+    context 'with invalid attributes' do
+      it 'does not change answer attributes' do
+        expect do
+          patch :update, params: { id: answer, answer: { body: 'new body' } }, format: :js
+        end.to_not change(answer, :body)
+      end
+
+      it 'renders update view' do
+        patch :update, params: { id: answer, answer: { body: 'new body' } }, format: :js
+        expect(response).to render_template :update
       end
     end
   end

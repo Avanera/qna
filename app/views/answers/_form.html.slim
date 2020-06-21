@@ -1,6 +1,6 @@
 .answer-errors
 
-= form_with model: [question, @exposed_answer] do |f|
+= form_with model: [question, @exposed_answer], class: 'new-answer' do |f|
   p
     = f.label :body, 'Your answer'
     = f.text_area :body
