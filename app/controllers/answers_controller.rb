@@ -6,14 +6,7 @@ class AnswersController < ApplicationController
   expose :question
 
   def create
-    @exposed_answer = question.answers.new(answer_params)
-    answer.user = current_user
-    if answer.save
-      redirect_to question, notice: 'Your answer successfully created'
-    else
-      flash.now[:alert] = "Your question was not saved"
-      render 'questions/show'
-    end
+    @exposed_answer = question.answers.create(answer_params.merge({ user_id: current_user.id }))
   end
 
   def destroy

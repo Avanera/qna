@@ -12,12 +12,12 @@ RSpec.describe AnswersController, type: :controller do
       it 'saves a new answer for the given question in the database' do
         expect { post :create, params: {
           answer: attributes_for(:answer), question_id: question
-        }}.to change(question.answers, :count).by(1)
+        }, format: :js }.to change(question.answers, :count).by(1)
       end
 
       it 'belongs to the user' do
         post :create, params: {
-          answer: attributes_for(:answer), question_id: question }
+          answer: attributes_for(:answer), question_id: question }, format: :js
 
         expect(assigns(:exposed_answer).user_id).to eq(user.id)
       end
@@ -25,9 +25,9 @@ RSpec.describe AnswersController, type: :controller do
       it 'redirects to question show view' do
         post :create, params: {
           answer: attributes_for(:answer), question_id: question
-        }
+        }, format: :js
 
-        expect(response).to redirect_to question
+        expect(response).to render_template :create
       end
     end
 
@@ -35,15 +35,15 @@ RSpec.describe AnswersController, type: :controller do
       it 'does not save the answer' do
         expect { post :create, params: {
           answer: attributes_for(:answer, :invalid), question_id: question
-        }}.to_not change(question.answers, :count)
+        }, format: :js }.to_not change(question.answers, :count)
       end
 
       it 're-renders question' do
         post :create, params: {
           answer: attributes_for(:answer, :invalid), question_id: question
-        }
+        }, format: :js
 
-        expect(response).to render_template 'questions/show'
+        expect(response).to render_template :create
       end
     end
   end
