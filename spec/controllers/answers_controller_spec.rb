@@ -66,6 +66,22 @@ RSpec.describe AnswersController, type: :controller do
 
     context 'with invalid attributes' do
       it 'does not change answer attributes' do
+        expect { patch :update, params: {
+          id: answer, answer: { body: 'new body' }
+        }, format: :js }.to_not change(answer, :body)
+      end
+
+      it 'renders update view' do
+        patch :update, params: { id: answer, answer: { body: 'new body' } }, format: :js
+        expect(response).to render_template :update
+      end
+    end
+
+    context 'not-author' do
+      let!(:another_user) { create(:user) }
+      before { login(another_user) }
+
+      it 'does not change answer attributes' do
         expect do
           patch :update, params: { id: answer, answer: { body: 'new body' } }, format: :js
         end.to_not change(answer, :body)
@@ -101,12 +117,12 @@ RSpec.describe AnswersController, type: :controller do
       let(:user) { create(:user) }
       before { login(user) }
 
-      it 'does not delete the question' do
+      it 'does not delete the answer' do
         expect { delete :destroy, params: { question_id: question, id: answer } }
           .to_not change(Answer, :count)
         end
 
-        it 'redirects to question show' do
+        it 'redirects to answer show' do
           delete :destroy, params: { question_id: question, id: answer }
 
           expect(response).to redirect_to question

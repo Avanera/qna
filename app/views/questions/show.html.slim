@@ -1,13 +1,7 @@
-h1= question.title
-h4= question.body
+.question
+  = render 'question_detailed'
 
 = render 'answers/form', locals: { answer: @exposed_answer }
 
-// <div> с классом answers
 .answers
   = render question.answers
-
-// current_user&.id means:
-// if current user is nil -> return nil (not exception)
-- if current_user&.author_of?(question)
-  = link_to 'Delete', question_path(question), method: :delete, data: { confirm: 'Are you sure?' }
