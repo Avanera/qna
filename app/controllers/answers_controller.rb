@@ -11,16 +11,15 @@ class AnswersController < ApplicationController
 
   def update
     @exposed_answer = Answer.find(params[:id])
-    @exposed_answer.update(answer_params)
-    @exposed_question = answer.question
+    if current_user.author_of?(answer)
+      answer.update(answer_params)
+      @exposed_question = answer.question
+    end
   end
 
   def destroy
     if current_user.author_of?(answer)
       answer.destroy
-      redirect_to answer.question, alert: 'Your answer successfully deleted'
-    else
-      redirect_to answer.question, alert: "You can't delete the answer created by another person"
     end
   end
 
