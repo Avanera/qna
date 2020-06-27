@@ -129,4 +129,29 @@ RSpec.describe AnswersController, type: :controller do
       end
     end
   end
+
+  describe 'PATCH #best' do
+    context 'author' do
+      before { login(user) }
+
+      it 'sets the best answer to his own question' do
+        patch :best, params: { id: answer }, format: :js
+        answer.reload
+
+        expect(answer.best).to be true
+      end
+    end
+
+    context 'not-author' do
+      let!(:another_user) { create(:user) }
+      before { login(another_user) }
+
+      it 'does not set the best answer to the question' do
+        expect { patch :best, params: { id: answer }, format: :js }
+          .to_not change(answer, :body)
+      end
+    end
+  end
 end
+
+

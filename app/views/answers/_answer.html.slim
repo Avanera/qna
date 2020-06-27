@@ -5,18 +5,26 @@
 
 - if answer.persisted?
   div class='answer' id="answer-#{answer.id}"
+    - if answer.best
+      ' Best answer
+
     p= answer.body
 
     - if current_user&.author_of?(answer)
       = link_to 'Delete the answer',
                 answer_path(answer), method: :delete,
-                class: 'delete-answer-link',
                 data: { confirm: 'Are you sure?', answer_id: answer.id, remote: true }
-      / answer_path(answer), method: :delete, data: { confirm: 'Are you sure?' }
-      |   |
+      '
       = link_to 'Edit', '#', class: 'edit-answer-link', data: { answer_id: answer.id }
 
     = form_with model: answer, class: 'hidden', html: { id: "edit-answer-#{answer.id}" } do |f|
       = f.label :body, 'Your answer'
       = f.text_area :body
       = f.submit 'Save'
+
+    - if current_user&.author_of?(answer.question)
+      - unless answer.best
+        '
+        = link_to 'Mark as the best answer',
+                  best_answer_path(answer), method: :patch,
+                  data: { answer_id: answer.id, remote: true }

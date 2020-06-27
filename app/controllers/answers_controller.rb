@@ -23,6 +23,14 @@ class AnswersController < ApplicationController
     end
   end
 
+  def best
+    @exposed_answer = Answer.find(params[:id])
+    if current_user.author_of?(answer)
+      @exposed_question = answer.question
+      answer.set_best
+    end
+  end
+
   private
 
   def answer_params
