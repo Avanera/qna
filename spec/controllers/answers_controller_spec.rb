@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe AnswersController, type: :controller do
   let(:user) { create(:user) }
   let(:question) { create(:question, user: user) }
-  let(:answer) { create(:answer, question: question, user: user) }
+  let!(:answer) { create(:answer, question: question, user: user) }
 
   describe 'POST #create' do
     before { login(user) }
@@ -12,22 +12,22 @@ RSpec.describe AnswersController, type: :controller do
       it 'saves a new answer for the given question in the database' do
         expect { post :create, params: {
           answer: attributes_for(:answer), question_id: question
-        }}.to change(question.answers, :count).by(1)
+        }, format: :js }.to change(question.answers, :count).by(1)
       end
 
       it 'belongs to the user' do
         post :create, params: {
-          answer: attributes_for(:answer), question_id: question }
+          answer: attributes_for(:answer), question_id: question }, format: :js
 
         expect(assigns(:exposed_answer).user_id).to eq(user.id)
       end
 
-      it 'redirects to question show view' do
+      it 'renders create template' do
         post :create, params: {
           answer: attributes_for(:answer), question_id: question
-        }
+        }, format: :js
 
-        expect(response).to redirect_to question
+        expect(response).to render_template :create
       end
     end
 
@@ -35,15 +35,61 @@ RSpec.describe AnswersController, type: :controller do
       it 'does not save the answer' do
         expect { post :create, params: {
           answer: attributes_for(:answer, :invalid), question_id: question
-        }}.to_not change(question.answers, :count)
+        }, format: :js }.to_not change(question.answers, :count)
       end
 
-      it 're-renders question' do
+      it 'renders create template' do
         post :create, params: {
           answer: attributes_for(:answer, :invalid), question_id: question
-        }
+        }, format: :js
 
-        expect(response).to render_template 'questions/show'
+        expect(response).to render_template :create
+      end
+    end
+  end
+
+  describe 'PATCH #update' do
+    before { login(user) }
+
+    context 'with valid attributes' do
+      it 'changes answer attributes' do
+        patch :update, params: { id: answer, answer: { body: 'new body' } }, format: :js
+        answer.reload
+        expect(answer.body).to eq 'new body'
+      end
+
+      it 'renders update view' do
+        patch :update, params: { id: answer, answer: { body: 'new body' } }, format: :js
+        expect(response).to render_template :update
+      end
+    end
+
+    context 'with invalid attributes' do
+      it 'does not change answer attributes' do
+        expect { patch :update, params: {
+          id: answer, answer: { body: 'new body' }
+        }, format: :js }.to_not change(answer, :body)
+      end
+
+      it 'renders update view' do
+        patch :update, params: { id: answer, answer: { body: 'new body' } }, format: :js
+        expect(response).to render_template :update
+      end
+    end
+
+    context 'not-author' do
+      let!(:another_user) { create(:user) }
+      before { login(another_user) }
+
+      it 'does not change answer attributes' do
+        expect do
+          patch :update, params: { id: answer, answer: { body: 'new body' } }, format: :js
+        end.to_not change(answer, :body)
+      end
+
+      it 'renders update view' do
+        patch :update, params: { id: answer, answer: { body: 'new body' } }, format: :js
+        expect(response).to render_template :update
       end
     end
   end
@@ -56,14 +102,14 @@ RSpec.describe AnswersController, type: :controller do
 
     context 'author' do
       it 'deletes the answer' do
-        expect { delete :destroy, params: { question_id: question, id: answer } }
+        expect { delete :destroy, params: { question_id: question, id: answer }, format: :js }
         .to change(Answer, :count).by(-1)
       end
 
-      it 'redirects to index' do
-        delete :destroy, params: { question_id: question, id: answer }
+      it 'renders destroy' do
+        delete :destroy, params: { question_id: question, id: answer }, format: :js
 
-        expect(response).to redirect_to question
+        expect(response).to render_template :destroy
       end
     end
 
@@ -71,16 +117,41 @@ RSpec.describe AnswersController, type: :controller do
       let(:user) { create(:user) }
       before { login(user) }
 
-      it 'does not delete the question' do
-        expect { delete :destroy, params: { question_id: question, id: answer } }
+      it 'does not delete the answer' do
+        expect { delete :destroy, params: { question_id: question, id: answer }, format: :js }
           .to_not change(Answer, :count)
         end
 
-        it 'redirects to question show' do
-          delete :destroy, params: { question_id: question, id: answer }
+        it 'renders destroy' do
+          delete :destroy, params: { question_id: question, id: answer }, format: :js
 
-          expect(response).to redirect_to question
+          expect(response).to render_template :destroy
+      end
+    end
+  end
+
+  describe 'PATCH #best' do
+    context 'author' do
+      before { login(user) }
+
+      it 'sets the best answer to his own question' do
+        patch :best, params: { id: answer }, format: :js
+        answer.reload
+
+        expect(answer.best).to be true
+      end
+    end
+
+    context 'not-author' do
+      let!(:another_user) { create(:user) }
+      before { login(another_user) }
+
+      it 'does not set the best answer to the question' do
+        expect { patch :best, params: { id: answer }, format: :js }
+          .to_not change(answer, :body)
       end
     end
   end
 end
+
+

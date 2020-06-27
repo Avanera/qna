@@ -42,38 +42,57 @@ RSpec.describe QuestionsController, type: :controller do
       it 'changes question attributes' do
         patch :update, params: {
           id: question, question: { title: 'new title', body: 'new body' }
-        }
+        }, format: :js
         question.reload
 
         expect(question.title).to eq 'new title'
         expect(question.body).to eq 'new body'
       end
 
-      it 'redirects to updated question' do
+      it 'renders update view' do
         patch :update, params: {
           id: question, question: attributes_for(:question)
-        }
+        }, format: :js
 
-        expect(response).to redirect_to question
+        expect(response).to render_template :update
       end
     end
 
     context 'with invalid attributes' do
-      let(:old_question) { question }
-
-      before { patch :update, params: {
-        id: question, question: attributes_for(:question, :invalid)
-        }}
-
         it 'does not change question' do
-          question.reload
-
-          expect(question.title).to eq old_question.title
-          expect(question.body).to eq old_question.body
+          expect do
+            patch :update, params: {
+              id: question, question: attributes_for(:question, :invalid)
+              }, format: :js
+          end.to_not change(question, :body)
         end
 
-        it 're-renders edit view' do
-          expect(response).to render_template :edit
+        it 'renders update view' do
+          patch :update, params: {
+            id: question, question: attributes_for(:question, :invalid)
+            }, format: :js
+          expect(response).to render_template :update
+        end
+      end
+
+      context 'not-author' do
+        let!(:another_user) { create(:user) }
+        before { login(another_user) }
+
+        it 'does not change question attributes' do
+          expect do
+            patch :update, params: {
+              id: question, question: attributes_for(:question)
+              }, format: :js
+          end.to_not change(question, :body)
+        end
+
+        it 'renders update view' do
+          patch :update, params: {
+            id: question, question: attributes_for(:question)
+            }, format: :js
+
+          expect(response).to render_template :update
         end
       end
     end
@@ -110,6 +129,14 @@ RSpec.describe QuestionsController, type: :controller do
 
         expect(response).to redirect_to question
       end
+    end
+  end
+
+  describe 'GET #show' do
+    before { get :show, params: { id: question } }
+
+    it 'assigns new answer for the question' do
+      expect(assigns(:exposed_answer)).to be_a_new(Answer)
     end
   end
 end

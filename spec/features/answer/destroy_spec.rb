@@ -12,13 +12,24 @@ feature 'User can delete his answer', %q{
 
   describe 'Authenticated user' do
 
-    scenario 'deletes his own answer' do
+    scenario 'deletes his own answer', js: true do
       sign_in(author)
       visit question_path(question)
+      # page.driver.browser.switch_to.alert.accept
+      page.evaluate_script('window.confirm = function() { return true; }')
       click_on 'Delete the answer'
 
-      expect(page).to have_content 'Your answer successfully deleted'
       expect(page).to_not have_content answer.body
+    end
+
+    scenario 'cancels deletion of his question', js: true do
+      sign_in(author)
+      visit question_path(question)
+      # page.driver.browser.switch_to.alert.dismiss
+      page.evaluate_script('window.confirm = function() { return false; }')
+      click_on 'Delete the answer'
+
+      expect(page).to have_content answer.body
     end
 
     scenario 'tries to delete not his own answer' do

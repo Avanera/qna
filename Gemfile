@@ -33,6 +33,8 @@ gem 'slim-rails'
 gem 'decent_exposure', '3.0.0'
 # Flexible authentication solution for Rails with Warden.
 gem 'devise'
+# A gem to automate using jQuery with Rails
+gem 'jquery-rails'
 # A helper for launching cross-platform applications in a fire and forget manner.
 gem 'launchy'
 

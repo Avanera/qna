@@ -6,22 +6,28 @@ class AnswersController < ApplicationController
   expose :question
 
   def create
-    @exposed_answer = question.answers.new(answer_params)
-    answer.user = current_user
-    if answer.save
-      redirect_to question_path(question), notice: 'Your answer successfully created'
-    else
-      flash.now[:alert] = "Your question was not saved"
-      render 'questions/show'
+    @exposed_answer = question.answers.create(answer_params.merge({ user_id: current_user.id }))
+  end
+
+  def update
+    @exposed_answer = Answer.find(params[:id])
+    if current_user.author_of?(answer)
+      answer.update(answer_params)
+      @exposed_question = answer.question
     end
   end
 
   def destroy
     if current_user.author_of?(answer)
       answer.destroy
-      redirect_to question, alert: 'Your answer successfully deleted'
-    else
-      redirect_to question, alert: "You can't delete the answer created by another person"
+    end
+  end
+
+  def best
+    @exposed_answer = Answer.find(params[:id])
+    if current_user.author_of?(answer)
+      @exposed_question = answer.question
+      answer.set_best
     end
   end
 
